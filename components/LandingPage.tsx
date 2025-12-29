@@ -35,7 +35,7 @@ export default function LandingPage() {
                         <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-cyan-400 blur-[80px] opacity-40 rounded-full animate-pulse"></div>
                         {/* Logo Image */}
                         <img
-                            src="/logo.svg"
+                            src={process.env.NODE_ENV === 'production' ? '/GuguAPI-doc/logo.svg' : '/logo.svg'}
                             alt="GuguAPI Logo"
                             className="relative w-full h-full drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
                         />

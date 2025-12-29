@@ -38,7 +38,8 @@ message = client.messages.create(
 )
 print(message.content[0].text)
 
-# 流式调用 (Streaming)
+# 方式一：基础流式 (推荐)
+# stream.text_stream 会自动处理事件，仅返回文本增量
 with client.messages.stream(
     max_tokens=1024,
     messages=[{"role": "user", "content": "Hello"}],
@@ -46,6 +47,23 @@ with client.messages.stream(
 ) as stream:
     for text in stream.text_stream:
         print(text, end="", flush=True)
+
+print() # 换行
+
+# 方式二：完整事件处理 (高级)
+# 如果需要处理 usage 信息或监控特定事件类型
+with client.messages.stream(
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Write a long poem"}],
+    model="claude-3-5-sonnet-20240620",
+) as stream:
+    for event in stream:
+        # 处理文本块增量
+        if event.type == "content_block_delta" and event.delta.type == "text_delta":
+            print(event.delta.text, end="", flush=True)
+        # 处理消息结束，获取 token 消耗
+        elif event.type == "message_stop":
+            print(f"\n\nDone! (Input tokens: {stream.get_final_message().usage.input_tokens})")
 ```
 </Tab>
 
@@ -75,20 +93,26 @@ async function main() {
   console.log(msg.content);
 
   // 流式调用 (Streaming)
+  console.log('--- Streaming Output ---');
   const stream = await anthropic.messages.stream({
-    model: "gpt-4o",
+    model: "claude-3-5-sonnet-20240620",
     max_tokens: 1024,
     messages: [{ role: "user", "content": "Hello" }],
   });
 
-  for await (const chunk of stream) {
-    if (chunk.type === 'content_block_delta') {
-      process.stdout.write(chunk.delta.text);
+  // 处理流式事件
+  for await (const event of stream) {
+    if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+      process.stdout.write(event.delta.text);
     }
   }
+  
+  // 获取最终完整消息（包含 usage）
+  const finalMessage = await stream.finalMessage();
+  console.log(`\n\nFinished. Input tokens: ${finalMessage.usage.input_tokens}`);
 }
 
-main();
+main().catch(console.error);
 ```
 </Tab>
 
