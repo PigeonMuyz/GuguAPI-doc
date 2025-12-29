@@ -1,0 +1,115 @@
+import { Tabs, Tab } from 'nextra/components'
+
+# 客户端代码示例
+
+GuguAPI 完全兼容 Anthropic (Claude) 接口规范，请使用 **Anthropic SDK** 进行调用。
+
+**Base URL**: `http://localhost:28890` (部分 SDK 会自动追加 `/v1/messages`)
+
+<Tabs items={['Python', 'Node.js', 'Curl']}>
+
+<Tab>
+## Python
+
+使用官方 `anthropic` 库。
+
+```bash
+pip install anthropic
+```
+
+```python
+import os
+from anthropic import Anthropic
+
+client = Anthropic(
+    api_key="sk-your-guguapi-key",
+    base_url="http://localhost:28890"
+)
+
+message = client.messages.create(
+    max_tokens=1024,
+    messages=[
+        {
+            "role": "user",
+            "content": "Hello, Claude",
+        }
+    ],
+    model="claude-3-5-sonnet-20240620",
+)
+print(message.content[0].text)
+
+# 流式调用 (Streaming)
+with client.messages.stream(
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello"}],
+    model="claude-3-5-sonnet-20240620",
+) as stream:
+    for text in stream.text_stream:
+        print(text, end="", flush=True)
+```
+</Tab>
+
+<Tab>
+## Node.js / TypeScript
+
+使用官方 `@anthropic-ai/sdk` 包。
+
+```bash
+npm install @anthropic-ai/sdk
+```
+
+```typescript
+import Anthropic from '@anthropic-ai/sdk';
+
+const anthropic = new Anthropic({
+  apiKey: 'sk-your-guguapi-key',
+  baseURL: 'http://localhost:28890',
+});
+
+async function main() {
+  const msg = await anthropic.messages.create({
+    model: "gpt-4o", // 支持跨模型调用
+    max_tokens: 1024,
+    messages: [{ role: "user", content: "Hello!" }],
+  });
+  console.log(msg.content);
+
+  // 流式调用 (Streaming)
+  const stream = await anthropic.messages.stream({
+    model: "gpt-4o",
+    max_tokens: 1024,
+    messages: [{ role: "user", "content": "Hello" }],
+  });
+
+  for await (const chunk of stream) {
+    if (chunk.type === 'content_block_delta') {
+      process.stdout.write(chunk.delta.text);
+    }
+  }
+}
+
+main();
+```
+</Tab>
+
+<Tab>
+## Curl
+
+直接调用 `/v1/messages` 接口。
+
+```bash
+curl http://localhost:28890/v1/messages \
+  -H "x-api-key: sk-your-guguapi-key" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{
+    "model": "claude-3-5-sonnet-20240620",
+    "max_tokens": 1024,
+    "messages": [
+      {"role": "user", "content": "Hello, world"}
+    ]
+  }'
+```
+</Tab>
+
+</Tabs>

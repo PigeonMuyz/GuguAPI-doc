@@ -1,0 +1,50 @@
+import { Callout } from 'nextra/components'
+
+# 多模态支持
+
+Sub2API 支持在消息中发送图片等多媒体内容。
+
+## Claude 平台
+
+支持 Anthropic 标准的 Base64 图片格式：
+
+```json
+{
+  "type": "image",
+  "source": {
+    "type": "base64",
+    "media_type": "image/jpeg",
+    "data": "/9j/4AAQSkZJRg..."
+  }
+}
+```
+
+## Gemini 平台
+
+<Callout type="info">
+通过 Claude 兼容层调用 Gemini 时，图片会自动转换格式。
+</Callout>
+
+**输入 (Claude 格式):**
+```json
+{
+  "type": "image",
+  "source": {
+    "type": "base64",
+    "media_type": "image/jpeg",
+    "data": "..."
+  }
+}
+```
+
+**输出 (Gemini 格式):**
+```json
+{
+  "inlineData": {
+    "mimeType": "image/jpeg",
+    "data": "..."
+  }
+}
+```
+
+不支持 URL 图片和 PDF 文档转换。

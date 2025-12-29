@@ -1,0 +1,24 @@
+# OpenAI Responses API
+
+`/v1/responses` 端点兼容 OpenAI Responses API 格式。
+
+## 请求示例
+
+```bash
+curl -X POST https://your-domain/v1/responses \
+  -H "Authorization: Bearer sk-xxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o",
+    "input": "Hello!",
+    "max_output_tokens": 1024
+  }'
+```
+
+## 支持的模型
+
+请求模型以 `gpt-*` 或 `o1-*` 开头时，自动路由到 OpenAI 账号：
+
+- `gpt-4o`
+- `gpt-4o-mini`
+- `o1`

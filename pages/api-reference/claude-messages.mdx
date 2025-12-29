@@ -1,0 +1,45 @@
+import { Callout } from 'nextra/components'
+
+# Claude Messages API
+
+`/v1/messages` 是主要的聊天接口，兼容 Anthropic Claude API 格式。
+
+## 请求示例
+
+```bash
+curl -X POST http://localhost:28890/v1/messages \
+  -H "x-api-key: sk-xxx" \
+  -H "Content-Type: application/json" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-sonnet-4-20250514",
+    "max_tokens": 1024,
+    "messages": [
+        {"role": "user", "content": "Hello!"}
+    ]
+  }'
+```
+
+## 系统提示与粘性会话
+
+<Callout emoji="💡">
+使用 `cache_control` 可以启用粘性会话，将相同上下文的请求路由到同一上游账号。
+</Callout>
+
+```json
+{
+  "system": [
+    {
+      "type": "text",
+      "text": "You are a helpful assistant.",
+      "cache_control": {
+        "type": "ephemeral"
+      }
+    }
+  ]
+}
+```
+
+## 平台路由
+
+当请求模型为 `gemini-*` 时，网关会自动将 Claude 格式转换为 Gemini 格式并路由到 Gemini 账号。

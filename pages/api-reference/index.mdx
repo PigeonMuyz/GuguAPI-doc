@@ -1,0 +1,40 @@
+import { Callout } from 'nextra/components'
+
+# API 概述
+
+Sub2API 作为 API 网关，支持多种上游 AI 服务的 API 格式。所有的请求需要在 headers 中包含 API Key。
+
+## 认证
+
+```bash
+# 统一格式
+x-api-key: sk-xxx
+```
+
+<Callout type="info">
+Sub2API 分发的 API Key 以 `sk-` 开头，在所有端点通用。
+</Callout>
+
+## 支持的端点
+
+### Claude API 兼容 (`/v1/`)
+
+| 端点 | 方法 | 说明 |
+|------|------|------|
+| `/v1/messages` | POST | Claude Messages API |
+| `/v1/messages/count_tokens` | POST | 计算 Token 数量 |
+| `/v1/models` | GET | 获取可用模型列表 |
+
+### OpenAI API 兼容
+
+| 端点 | 方法 | 说明 |
+|------|------|------|
+| `/v1/responses` | POST | OpenAI Responses API |
+
+### Gemini 原生 API (`/v1beta/`)
+
+| 端点 | 方法 | 说明 |
+|------|------|------|
+| `/v1beta/models` | GET | 列出所有模型 |
+| `/v1beta/models/:model:generateContent` | POST | 生成内容 |
+| `/v1beta/models/:model:streamGenerateContent` | POST | 流式生成 |

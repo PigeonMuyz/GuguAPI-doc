@@ -1,0 +1,7 @@
+{
+    "index": "API 概述",
+    "claude-messages": "Claude Messages API",
+    "openai-responses": "OpenAI Responses API",
+    "gemini-native": "Gemini 原生 API",
+    "multimodal": "多模态支持"
+}
